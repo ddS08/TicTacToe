@@ -5,7 +5,7 @@ Compile and Run TicTacToe.c file
 
 To play against the computer, press 1 (Computer always being O)\
 To play the two player mode, press 2 (wherein player 1 has the choice to select either X or O and player 2 will get the other accordingly)\
-Press 3 to exit\
+Press 3 to exit
 
 To place an X/O on the grid, enter the coordinates (space seperated)
 
