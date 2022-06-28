@@ -19,9 +19,13 @@ Program will throw a warning if player tries to play in a filled space
 Single player
 
 Player has an option to go either first or second against the computer
+
 Computer Move priority:
+
 Computer will try to win if possible (Two O already alligned)
+
 If not possible then computer will try to block player from winning if possible (Two X already alligned)
+
 Otherwise, computer will play randomly in any empty space
 
 Note: Computer is not completely optimal, but it will try to win or block player from winning whenever possible
