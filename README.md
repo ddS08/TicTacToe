@@ -1,4 +1,4 @@
-Dhyaan Shah
+Dhyaan Shah/Dhruvin Jhaveri
 
 
 Compile and Run TicTacToe.c file
@@ -9,9 +9,9 @@ Press 3 to exit
 
 To place an X/O on the grid, enter the coordinates (space seperated)
 
-| 0 | 1 | 2 |\
-| 3 | 4 | 5 |\
-| 6 | 7 | 8 |
+| 1 | 2 | 3 |\
+| 4 | 5 | 6 |\
+| 7 | 8 | 9 |
 
 Assuming player will only play in an empty space
 Program will throw a warning if player tries to play in a filled space
