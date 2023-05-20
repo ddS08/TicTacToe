@@ -1,8 +1,15 @@
 #include<stdio.h>
 #include<stdlib.h>
-#include<windows.h>
-#include<conio.h>
-#include<time.h>
+
+#include <stdbool.h>
+#include <unistd.h>
+
+#define clear "\e[1;1H\e[2J"
+void grid_print(char(*)[4]);
+void human(char(*)[4]);
+void computer(char (*)[4]);
+int checkbool(char (*)[4]);
+int minimax(char (*)[4],int);
 
 char board1[3][3];
 char p1,p2;
@@ -13,108 +20,162 @@ void fordelay(int j)
          l=i;
 }
 
-char gridChar(int i) {
-  switch (i) {
-  case -1:
-    return 'X';
-  case 0:
-    return ' ';
-  case 1:
-    return 'O';
-  }
-}
 
-void draw(int b[9]) {
-  printf(" %c | %c | %c\n", gridChar(b[0]), gridChar(b[1]), gridChar(b[2]));
-  printf("---+---+---\n");
-  printf(" %c | %c | %c\n", gridChar(b[3]), gridChar(b[4]), gridChar(b[5]));
-  printf("---+---+---\n");
-  printf(" %c | %c | %c\n", gridChar(b[6]), gridChar(b[7]), gridChar(b[8]));
-}
 
-int win(const int board[9])
+
+
+
+void computer(char (*grid)[4])
 {
-  unsigned wins[8][3] = {{0, 1, 2}, {3, 4, 5}, {6, 7, 8}, {0, 3, 6},
-                         {1, 4, 7}, {2, 5, 8}, {0, 4, 8}, {2, 4, 6}};
-  int i;
-
-  for (i = 0; i < 8; ++i)
-  {
-    if (board[wins[i][0]] != 0 && board[wins[i][0]] == board[wins[i][1]] &&
-        board[wins[i][0]] == board[wins[i][2]])
-      return board[wins[i][2]];
-  }
-  return 0;
-}
-
-int minimax(int board[9], int player) {
-
-  int winner = win(board);
-  if (winner != 0)
-    return winner * player;
-
-  int move = -1;
-  int score = -2;
-  int i;
-  for (i = 0; i < 9; ++i) {
-    if (board[i] == 0) {
-      board[i] = player;
-      int thisScore = -minimax(board, player * -1);
-      if (thisScore > score) {
-        score = thisScore;
-        move = i;
-      }
-      board[i] = 0;
+    int i,j,pt,bpt=-20,index_x,index_y;
+    for (i=0;i<3;i++)
+    {
+        for (j=0;j<3;j++)
+        {
+            if (grid[i][j] == ' ')
+            {
+                grid[i][j]='O';
+                pt=minimax(grid,0);
+                grid[i][j]=' ';
+                if(pt>bpt)
+                {
+                    bpt=pt;
+                    index_x=i;
+                    index_y=j;
+                }
+            }
+        }
     }
-  }
-  if (move == -1)
-    return 0;
-  return score;
+    grid[index_x][index_y]='O';
 }
 
-void computerMove(int board[9]) {
-  int move = -1;
-  int score = -2;
-  int i;
-  for (i = 0; i < 9; ++i) {
-    if (board[i] == 0) {
-      board[i] = 1;
-      int tempScore = -minimax(board, -1);
-      board[i] = 0;
-      if (tempScore > score) {
-        score = tempScore;
-        move = i;
-      }
+int minimax(char (*grid)[4],int ismax)
+{
+    int score,i,j,pt;
+    score = check(grid);
+    if (score != 0)
+    {
+        return score;
     }
-  }
-
-  board[move] = 1;
+    if (ismax)      //maximizer
+    {
+        int bpt = -1;
+        for (i=0;i<3;i++)
+        {
+            for (j=0;j<3;j++)
+            {
+                if (grid[i][j] == ' ')
+                {
+                    grid[i][j] = 'O';
+                    pt = minimax(grid,0);
+                    grid[i][j] = ' ';
+                    if (pt>bpt)
+                    {
+                        bpt = pt;
+                    }
+                }
+            }
+        }
+        return bpt;
+    }
+    else        //minimizer
+    {
+        int bpt = 1;
+        for (i=0;i<3;i++)
+        {
+            for (j=0;j<3;j++)
+            {
+                if (grid[i][j] == ' ')
+                {
+                    grid[i][j] = 'X';
+                    pt = minimax(grid,1);
+                    grid[i][j] = ' ';
+                    if (pt<bpt)
+                    {
+                        bpt = pt;
+                    }
+                }
+            }
+        }
+        return bpt;
+    }
 }
- int check6(char n) {
-  int i, flag = 0;
-      if (n!= 88 &&  n!= 79) {
 
-        flag = 0;
-      } else {
-          printf("\nTry A Different Square\n");
-        flag = 1;
-      }
-
-    return flag;
-  }
-
-void playerMove(int board[9]) {
-  int move = 0;
- do {
-
-    printf("\nInput (0-8): ");
-    scanf("%d", &move);
-    printf("\n");
-    system("cls");
- }
-  while (move >= 9 || move < 0 && board[move] == 0 || check6(gridChar(board[move]))==1);
-  board[move] = -1;
+void grid_print(char (*grid)[4])
+{
+    printf(clear);
+    sleep(1);
+    printf("  %c  |  %c  |  %c  \n",grid[0][0],grid[0][1],grid[0][2]);
+    printf("-----------------\n");
+    printf("  %c  |  %c  |  %c  \n",grid[1][0],grid[1][1],grid[1][2]);
+    printf("-----------------\n");
+    printf("  %c  |  %c  |  %c  \n",grid[2][0],grid[2][1],grid[2][2]);
 }
+
+void human(char (*grid)[4])
+{
+    int n,ch[10]={0,00,01,02,10,11,12,20,21,22},index,index_x,index_y;
+    
+    A:
+    printf("\nCHOOSE YOUR BOX NUMBER ");
+    scanf("%d",&n);
+    
+    index=ch[n];
+    index_x=index/10;
+    index_y=index%10;
+    if (index_x>2 || index_y>2 || grid[index_x][index_y]!=' ')
+    {
+        printf("INVALID INPUT!\n");
+        goto A;
+    }
+    grid[index_x][index_y]='X';
+}
+
+int checkbool(char (*grid)[4])
+{
+    int c=0;        //counter for checking if game is over or not
+    for (int i=0;i<3;i++)
+    {
+        //HORIZONTAL
+        if ( (grid[i][0] == grid[i][1]) && (grid[i][1] == grid[i][2]) && (grid[i][0] != ' ') )
+        {
+            if (grid[i][0] == 'X')
+                return -1;
+            else
+                return 1;
+        }
+        //VERTICAL
+        if ( (grid[0][i] == grid[1][i]) && (grid[1][i] == grid[2][i]) && (grid[0][i] != ' ') )
+        {
+            if (grid[0][i] == 'X')
+                return -1;
+            else
+                return 1;
+        }
+    }
+
+    //DIAGONAL
+    if ( ((grid[0][0] == grid[1][1]) && (grid[1][1] == grid[2][2]) && (grid[0][0] != ' ')) || ((grid[0][2] == grid[1][1]) && (grid[1][1] ==grid[2][0]) && (grid[1][1] != ' ')) )
+    {
+        if (grid[1][1] == 'X')
+            return -1;
+        else
+            return 1;
+    }
+    for (int i = 0; i < 3; i++)
+    {
+        for (int j = 0; j < 3; j++)
+        {
+            if(grid[i][j] != ' ')
+                c++;
+        } 
+    }
+    if(c == 9)
+        return 78;      //random number telling game is tied
+    else
+        return 0;       //number telling the game is still to be finished
+}
+
 
 void tttsingle()
 {
@@ -122,29 +183,32 @@ void tttsingle()
 
   int board[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
   printf("Board:\n");
-  printf(" 0 | 1 | 2 \n---+---+---\n 3 | 4 | 5 \n---+---+---\n 6 | 7 | 8 \n");
+  printf(" 1 | 2 | 3 \n---+---+---\n 4 | 5 | 6 \n---+---+---\n 7 | 8 | 9 \n");
   printf("Computer: O, You: X\n Would You Like To Go First Or Second:\n>");
   int player = 0;
   scanf("%d", &player);
+    int i;
+    char grid[4][4]={"   ","   ","   "},names[2][10]={"COMPUTER","HUMAN"};
+    grid_print(grid);
   printf("\n");
 
   printf("\n");
 
   unsigned turn;
-  for (turn = 0; turn < 9 && win(board) == 0; ++turn) {
+  for (turn = 0; turn < 9 && checkbool(grid)==0; ++turn) {
     if ((turn + player) % 2 == 0)
-      computerMove(board);
+      computer(grid);
     else {
-      draw(board);
-      playerMove(board);
+      grid_print(grid);
+      human(grid);
     }
   }
-  switch (win(board)) {
+  switch (checkbool(grid)) {
   case 0:
     printf("Good Try, It's A Draw\n");
     break;
   case 1:
-    draw(board);
+    grid_print(grid);
     printf("You Can't Beat The Computer, You Lose.\n");
     break;
   case -1:
