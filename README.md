@@ -1,4 +1,4 @@
-Dhyaan Shah/Dhruvin Jhaveri
+Pirann Sukhia & Dhyaan Shah
 
 
 Compile and Run TicTacToe.c file
